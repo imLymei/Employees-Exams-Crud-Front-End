@@ -1,91 +1,125 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+'use client';
 
-const inter = Inter({ subsets: ['latin'] })
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const [employees, setEmployees] = useState([]);
+	const [exams, setExams] = useState([]);
+	const [registrations, setRegistrations] = useState([]);
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
+	async function getAllEmployees() {
+		const getAllData = {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		};
 
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+		const res = await fetch('http://localhost:8080/employee/getAll', getAllData);
+		const response = await res.json();
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
+		setEmployees(response);
+	}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+	async function getAllExams() {
+		const getAllData = {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const res = await fetch('http://localhost:8080/exam/getAll', getAllData);
+		const response = await res.json();
+
+		setExams(response);
+	}
+
+	async function getAllRegistrations() {
+		const getAllData = {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const res = await fetch('http://localhost:8080/registration/getAll', getAllData);
+		const response = await res.json();
+
+		setRegistrations(response);
+	}
+
+	function dateFormat(date) {
+		if (date < 10) {
+			return `0${date}`;
+		} else return date;
+	}
+
+	function getExamInformation(registration) {
+		let response = 'Not Found';
+		exams.map((exam) => {
+			if (exam.id == registration.examId) {
+				response = exam.name;
+			}
+		});
+		return response;
+	}
+
+	function getEmployeeInformation(registration) {
+		let response = 'Not Found';
+		employees.map((employee) => {
+			if (employee.id == registration.employeeId) {
+				response = employee.name;
+			}
+		});
+		return response;
+	}
+
+	useEffect(() => {
+		getAllEmployees();
+		getAllExams();
+		getAllRegistrations();
+	}, []);
+
+	return (
+		<main className='bg-black w-screen h-full flex flex-col items-center p-4'>
+			<h2 className='text-2xl m-4'>Employees:</h2>
+			<div className='informationCard'>
+				{employees.map((employee) => {
+					return (
+						<div key={employee.id} className='propertiesCard'>
+							<h3>{employee.name}</h3>
+						</div>
+					);
+				})}
+			</div>
+			<h2 className='text-2xl m-4'>Exams:</h2>
+			<div className='informationCard'>
+				{exams.map((exam) => {
+					return (
+						<div key={exam.id} className='propertiesCard'>
+							<h2>{exam.name}</h2>
+						</div>
+					);
+				})}
+			</div>
+			<h2 className='text-2xl m-4'>Registrations of exams done by employees:</h2>
+			<div className='informationCard'>
+				{registrations.map((registration) => {
+					return (
+						<div key={registration.id} className='propertiesCard'>
+							<h3>Employee: {getEmployeeInformation(registration)}</h3>
+							<h3>Exam: {getExamInformation(registration)}</h3>
+							<h3>
+								Date:{' '}
+								{`${dateFormat(new Date(registration.date).getDate())}/${dateFormat(
+									new Date(registration.date).getMonth() + 1
+								)}/${new Date(registration.date).getFullYear()}`}
+							</h3>
+						</div>
+					);
+				})}
+			</div>
+		</main>
+	);
 }
