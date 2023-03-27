@@ -14,11 +14,15 @@ body {
 }
 
 .informationCard {
-	@apply w-[50vw] h-[30vh] flex flex-col items-center gap-2 p-6 border border-white overflow-auto;
+	@apply w-[50vw] h-[30vh] flex flex-col items-center gap-2 p-6 m-4 border border-white overflow-auto;
 }
 
 .propertiesCard {
-	@apply p-4 w-3/4 border border-white/20 flex-none;
+	@apply p-4 w-3/4 border border-white/20 flex-none relative overflow-x-visible;
+}
+
+.idData {
+	@apply absolute right-2 top-1/2 -translate-y-1/2 text-sm;
 }
 
 ::-webkit-scrollbar {
@@ -36,4 +40,15 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
 	background: #353535;
+}
+
+::-webkit-calendar-picker-indicator {
+	cursor: pointer;
+	background-color: #fff;
+	border: 1px solid white;
+	border-radius: 50%;
+}
+
+::-webkit-calendar-picker-indicator:hover {
+	background-color: #fff9;
 }
