@@ -5,6 +5,8 @@ import { BsTrash3 } from 'react-icons/bs';
 
 export default function Home() {
 	const employeeAddName = useRef();
+	const employeeUpdateId = useRef();
+	const employeeUpdateName = useRef();
 	const examAddName = useRef();
 	const registrationAddEmployeeId = useRef();
 	const registrationAddExamId = useRef();
@@ -106,6 +108,33 @@ export default function Home() {
 		}
 	}
 
+	async function updateEmployee() {
+		const updatedId = employeeUpdateId.current.value.trim();
+		const updatedName = employeeUpdateName.current.value.trim();
+
+		employeeUpdateId.current.value = '';
+		employeeUpdateName.current.value = '';
+
+		const updateData = {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				id: updatedId,
+				name: updatedName,
+			}),
+		};
+
+		const response = await fetch('http://localhost:8080/employee/update', updateData);
+
+		if (response.status == 200) {
+			setEmployeeAdded(true);
+			getAll();
+			setTimeout(resetAdded, 5000);
+		}
+	}
+
 	async function addExam() {
 		const newExam = { name: examAddName.current.value.trim() };
 		examAddName.current.value = '';
@@ -147,9 +176,7 @@ export default function Home() {
 			body: JSON.stringify(newRegistration),
 		};
 
-		const response = await fetch('http://localhost:8080/registration/add', addData).then(
-			setRegistrations([...registrations, newRegistration])
-		);
+		const response = await fetch('http://localhost:8080/registration/add', addData);
 
 		console.log(response);
 
@@ -226,7 +253,7 @@ export default function Home() {
 	return (
 		<main className='bg-black w-screen h-full flex flex-col items-center p-4'>
 			<h2 className='text-2xl'>Employees:</h2>
-			<div className='mb-8 relative overflow-visible'>
+			<div className='mb-8 relative flex flex-col items-center overflow-visible'>
 				<div className='informationCard'>
 					{employees.map((employee, index) => {
 						return (
@@ -234,7 +261,7 @@ export default function Home() {
 								<h3>{employee.name}</h3>
 								<h4 className='idData'>{employee.id}</h4>
 								<BsTrash3
-									className='cursor-pointer absolute right-0 top-0 translate-x-1/2 -translate-y-1/2'
+									className='trashCan'
 									onClick={() => {
 										deleteEmployee(employee.id);
 									}}
@@ -243,19 +270,41 @@ export default function Home() {
 						);
 					})}
 				</div>
-				<div>
+				<div className='grid grid-cols-2 gap-2 w-[50vw]'>
 					<form className='flex flex-col items-center gap-4'>
 						<input
 							type='text'
 							placeholder='Employee Name'
-							className='bg-black border outline-none p-2 w-1/2 border-white/20'
+							className='bg-black border outline-none p-2 w-full border-white/20'
 							ref={employeeAddName}
 						/>
 						<button
 							type='button'
-							className='border border-white/20 w-1/2 p-2 hover:bg-white/10'
+							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={addEmployee}>
 							Add
+						</button>
+					</form>
+					<form className='flex flex-col items-center gap-4'>
+						<div className='flex w-full gap-2'>
+							<input
+								type='text'
+								placeholder='Employee ID'
+								className='bg-black border outline-none p-2 w-1/2 border-white/20'
+								ref={employeeUpdateId}
+							/>
+							<input
+								type='text'
+								placeholder='Employee Name'
+								className='bg-black border outline-none p-2 w-1/2 border-white/20'
+								ref={employeeUpdateName}
+							/>
+						</div>
+						<button
+							type='button'
+							className='border border-white/20 w-full p-2 hover:bg-white/10'
+							onClick={updateEmployee}>
+							Update
 						</button>
 					</form>
 				</div>
@@ -274,7 +323,7 @@ export default function Home() {
 								<h2>{exam.name}</h2>
 								<h4 className='idData'>{exam.id}</h4>
 								<BsTrash3
-									className='cursor-pointer absolute right-0 top-0 translate-x-1/2 -translate-y-1/2'
+									className='trashCan'
 									onClick={() => {
 										deleteExam(exam.id);
 									}}
@@ -319,7 +368,7 @@ export default function Home() {
 								</h3>
 								<h4 className='idData'>{registration.id}</h4>
 								<BsTrash3
-									className='cursor-pointer absolute right-0 top-0 translate-x-1/2 -translate-y-1/2'
+									className='trashCan'
 									onClick={() => {
 										deleteRegistration(registration.id);
 									}}
@@ -331,13 +380,13 @@ export default function Home() {
 				<form className='flex flex-col items-center gap-4'>
 					<input
 						type='text'
-						placeholder='Employee Id'
+						placeholder='Employee ID'
 						className='bg-black border outline-none p-2 w-1/2 border-white/20'
 						ref={registrationAddEmployeeId}
 					/>
 					<input
 						type='text'
-						placeholder='Exam Id'
+						placeholder='Exam ID'
 						className='bg-black border outline-none p-2 w-1/2 border-white/20'
 						ref={registrationAddExamId}
 					/>
