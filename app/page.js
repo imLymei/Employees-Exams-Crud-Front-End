@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { BsTrash3 } from 'react-icons/bs';
+import Foot from './Foot';
 
 export default function Home() {
 	const employeeAddName = useRef();
@@ -139,6 +140,13 @@ export default function Home() {
 
 	async function addEmployee() {
 		const newEmployee = { name: employeeAddName.current.value.trim() };
+
+		if (newEmployee.name.length < 3) {
+			setEmployeeStatus([false, 'error: O nome não pode conter menos de 3 caracteres']);
+			setTimeout(resetStatus, 10000);
+			return;
+		}
+
 		employeeAddName.current.value = '';
 		const addData = {
 			method: 'POST',
@@ -173,14 +181,20 @@ export default function Home() {
 	}
 
 	async function updateEmployee() {
-		const updatedId = employeeUpdateId.current.value.trim();
-		const updatedName = employeeUpdateName.current.value.trim();
+		const updateId = employeeUpdateId.current.value.trim();
+		const updateName = employeeUpdateName.current.value.trim();
 
 		employeeUpdateId.current.value = '';
 		employeeUpdateName.current.value = '';
 
-		if (updatedName.length < 3) {
+		if (updateName.length < 3) {
 			setEmployeeStatus([false, 'error: O nome não pode conter menos de 3 caracteres']);
+			setTimeout(resetStatus, 10000);
+			return;
+		}
+
+		if (!containsOnlyNumbers(updateId)) {
+			setEmployeeStatus([false, 'error: O ID deve conter apenas números']);
 			setTimeout(resetStatus, 10000);
 			return;
 		}
@@ -191,8 +205,8 @@ export default function Home() {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				id: updatedId,
-				name: updatedName,
+				id: updateId,
+				name: updateName,
 			}),
 		};
 
@@ -211,6 +225,13 @@ export default function Home() {
 
 	async function addExam() {
 		const newExam = { name: examAddName.current.value.trim() };
+
+		if (newExam.name.length < 3) {
+			setExamStatus([false, 'error: O nome não pode conter menos de 3 caracteres']);
+			setTimeout(resetStatus, 10000);
+			return;
+		}
+
 		examAddName.current.value = '';
 		const addData = {
 			method: 'POST',
@@ -235,6 +256,12 @@ export default function Home() {
 
 		if (updateName.length < 3) {
 			setExamStatus([false, 'error: O nome não pode conter menos de 3 caracteres']);
+			setTimeout(resetStatus, 10000);
+			return;
+		}
+
+		if (!containsOnlyNumbers(updateId)) {
+			setExamStatus([false, 'error: O ID deve conter apenas números']);
 			setTimeout(resetStatus, 10000);
 			return;
 		}
@@ -289,6 +316,16 @@ export default function Home() {
 		registrationAddDate.current.value = '';
 		registrationAddEmployeeId.current.value = '';
 		registrationAddExamId.current.value = '';
+
+		if (
+			newRegistration.date.length < 10 ||
+			!containsOnlyNumbers(newRegistration.employeeId) ||
+			!containsOnlyNumbers(newRegistration.examId)
+		) {
+			setRegistrationStatus([false, 'error: Os IDS e a data precisam ser válidos']);
+			setTimeout(resetStatus, 10000);
+			return;
+		}
 
 		const addData = {
 			method: 'POST',
@@ -406,7 +443,7 @@ export default function Home() {
 
 	return (
 		<main className='bg-black w-screen h-full flex flex-col items-center p-4'>
-			<h2 className='text-2xl'>Employees:</h2>
+			<h2 className='text-2xl'>Funcionários:</h2>
 			<div className='sectionsCard'>
 				<div className='informationCard'>
 					{employees.map((employee, index) => {
@@ -428,7 +465,7 @@ export default function Home() {
 					<form className='flex flex-col items-center gap-4'>
 						<input
 							type='text'
-							placeholder='Employee Name'
+							placeholder='Nome do Funcionário'
 							className='bg-black border outline-none p-2 w-full border-white/20'
 							ref={employeeAddName}
 						/>
@@ -436,20 +473,20 @@ export default function Home() {
 							type='button'
 							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={addEmployee}>
-							Add
+							Adicionar
 						</button>
 					</form>
 					<form className='flex flex-col items-center gap-4'>
 						<div className='flex w-full gap-2'>
 							<input
 								type='text'
-								placeholder='Employee ID'
+								placeholder='ID do Funcionário'
 								className='bg-black border outline-none p-2 w-1/2 border-white/20'
 								ref={employeeUpdateId}
 							/>
 							<input
 								type='text'
-								placeholder='Employee Name'
+								placeholder='Nome do Funcionário'
 								className='bg-black border outline-none p-2 w-1/2 border-white/20'
 								ref={employeeUpdateName}
 							/>
@@ -458,7 +495,7 @@ export default function Home() {
 							type='button'
 							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={updateEmployee}>
-							Update
+							Atualizar
 						</button>
 					</form>
 				</div>
@@ -469,7 +506,7 @@ export default function Home() {
 					{employeeStatus[1]}
 				</h5>
 			</div>
-			<h2 className='text-2xl'>Exams:</h2>
+			<h2 className='text-2xl'>Exames:</h2>
 			<div className='sectionsCard'>
 				<div className='informationCard'>
 					{exams.map((exam, index) => {
@@ -491,7 +528,7 @@ export default function Home() {
 					<form className='flex flex-col items-center gap-4'>
 						<input
 							type='text'
-							placeholder='Exam Name'
+							placeholder='Nome do exame'
 							className='bg-black border outline-none p-2 w-full border-white/20'
 							ref={examAddName}
 						/>
@@ -499,20 +536,20 @@ export default function Home() {
 							type='button'
 							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={addExam}>
-							Add
+							Adicionar
 						</button>
 					</form>
 					<form className='flex flex-col items-center gap-4'>
 						<div className='flex w-full gap-2'>
 							<input
 								type='text'
-								placeholder='Exam ID'
+								placeholder='ID do exame'
 								className='bg-black border outline-none p-2 w-1/2 border-white/20'
 								ref={examUpdateId}
 							/>
 							<input
 								type='text'
-								placeholder='Exam Name'
+								placeholder='Nome do exame'
 								className='bg-black border outline-none p-2 w-1/2 border-white/20'
 								ref={examUpdateName}
 							/>
@@ -521,7 +558,7 @@ export default function Home() {
 							type='button'
 							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={updateExam}>
-							Update
+							Atualizar
 						</button>
 					</form>
 				</div>
@@ -532,7 +569,7 @@ export default function Home() {
 					{examStatus[1]}
 				</h5>
 			</div>
-			<h2 className='text-2xl'>Registrations of exams done by employees:</h2>
+			<h2 className='text-2xl'>Registro dos exames efetuados:</h2>
 			<div className='sectionsCard'>
 				<div className='informationCard'>
 					{registrations.map((registration, index) => {
@@ -561,13 +598,13 @@ export default function Home() {
 					<form className='flex flex-col items-center gap-4'>
 						<input
 							type='text'
-							placeholder='Employee ID'
+							placeholder='ID do Funcionário'
 							className='bg-black border outline-none p-2 w-full border-white/20'
 							ref={registrationAddEmployeeId}
 						/>
 						<input
 							type='text'
-							placeholder='Exam ID'
+							placeholder='ID do exame'
 							className='bg-black border outline-none p-2 w-full border-white/20'
 							ref={registrationAddExamId}
 						/>
@@ -580,7 +617,7 @@ export default function Home() {
 							type='button'
 							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={addRegistration}>
-							Add
+							Adicionar
 						</button>
 					</form>
 					<form className='flex flex-col items-center gap-4'>
@@ -613,7 +650,7 @@ export default function Home() {
 							type='button'
 							className='border border-white/20 w-full p-2 hover:bg-white/10'
 							onClick={updateRegistration}>
-							Update
+							Atualizar
 						</button>
 					</form>
 				</div>
@@ -679,6 +716,7 @@ export default function Home() {
 					{registrationSearchStatus[1]}
 				</h5>
 			</div>
+			<Foot />
 		</main>
 	);
 }
