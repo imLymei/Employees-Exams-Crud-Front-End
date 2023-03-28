@@ -29,17 +29,21 @@ body {
 	@apply transition-all hover:scale-125 cursor-pointer absolute right-0 top-0 translate-x-1/2 -translate-y-1/2;
 }
 
+.sectionsCard {
+	@apply mb-8 relative flex flex-col items-center overflow-visible;
+}
+
 ::-webkit-scrollbar {
 	width: 10px;
 	display: overlay;
 }
 
 ::-webkit-scrollbar-track {
-	background: #212121;
+	background: #151515;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #151515;
+	background: #212121;
 }
 
 ::-webkit-scrollbar-thumb:hover {
