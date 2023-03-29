@@ -1,6 +1,6 @@
 export function Foot() {
 	return (
-		<div className='pt-2 bg-black w-screen text-center text-sm border-t border-white'>
+		<div className='p-4 text-center text-sm fixed bottom-0 right-0 opacity-10'>
 			<h4>
 				<a href='https://lymei.art' target='_blank' rel='noreferrer'>
 					Felipe Cardoso
